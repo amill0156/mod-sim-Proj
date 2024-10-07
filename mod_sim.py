@@ -3,6 +3,7 @@ import random
 from clubhouse import Clubhouse
 from hole_par import HolePar
 from golf_course import GolfCourse
+#from course_operator import CourseOperator
 
 
 carts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
@@ -37,9 +38,9 @@ class ModSim:
 
     def play_hole(self, env, cart, hole_number):
         wait_time = self.get_par_wait_time(hole_number)
-        print(f"Cart {cart} is starting hole {hole_number} at time {env.now}. Par wait time: {wait_time} minutes.")
+        print(f"Group {cart} is starting hole {hole_number} at time {env.now}. Par wait time: {wait_time} minutes.")
         yield env.timeout(wait_time)  # Simulate time taken to complete the hole
-        print(f"Cart {cart} has finished hole {hole_number} at time {env.now} after {wait_time} minutes.")
+        print(f"Group {cart} has finished hole {hole_number} at time {env.now} after {wait_time} minutes.")
 
 
     def send_cart_to_course(self, env, cart):
@@ -47,13 +48,13 @@ class ModSim:
             yield env.process(self.play_hole(env, cart, hole_number))  # Process each hole one by one
 
 
-        print(f"Cart {cart} has completed the course at time {env.now}.")
+        print(f"Group {cart} has completed the course at time {env.now}.")
 
     def cart_recieve(self, env):
         tee_times = [1, 2, 3, 4, 5, 6]
 
         for group_num in tee_times:
-            print(f"\nReceiving group {group_num}'s carts at time {env.now}...")
+            print(f"\nGroup {group_num} is about to go off now at time {env.now}...")
             carts_to_take = clubhouse.carts[:2]
             for cart in carts_to_take:
                 clubhouse.remove_cart(cart)
