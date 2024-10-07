@@ -1,74 +1,85 @@
 import simpy
-import sched
-import time
 import random
-
-import hole_queue
-from golf_course import GolfCourse
-from course_operator import CourseOperator
 from clubhouse import Clubhouse
-from hole_queue import HoleQueue
+from hole_par import HolePar
+from golf_course import GolfCourse
+
 
 carts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-                 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52]
+         30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52]
 taken_carts = []
 
+
 clubhouse = Clubhouse(carts, taken_carts)
+hole_par = HolePar()
+
+
 class ModSim:
+    def __init__(self, env):
+        self.env = env
+
+
     def main(self):
         print("Hello and welcome to Miller's Landing Golf and Country Club!")
         print("We're glad you're here!")
-        golf_course = GolfCourse(20)
-        print(golf_course.course_state)
+        golf_course = GolfCourse(18)
+        #print(golf_course.course_state)
 
 
-    def cart_recieve(self):
+    def get_par_wait_time(self, hole_number):
+        if hole_number in [3, 6, 13, 16]:  # Par 3 holes
+            return hole_par.par_3()
+        elif hole_number in [2, 4, 5, 7, 9, 10, 11, 12, 14, 17]:  # Par 4 holes
+            return hole_par.par_4()
+        else:  # Par 5 holes (holes 1, 8, 15, 18)
+            return hole_par.par_5()
 
-        tee_times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+
+    def play_hole(self, env, cart, hole_number):
+        wait_time = self.get_par_wait_time(hole_number)
+        print(f"Cart {cart} is starting hole {hole_number} at time {env.now}. Par wait time: {wait_time} minutes.")
+        yield env.timeout(wait_time)  # Simulate time taken to complete the hole
+        print(f"Cart {cart} has finished hole {hole_number} at time {env.now} after {wait_time} minutes.")
+
+
+    def send_cart_to_course(self, env, cart):
+        for hole_number in range(1, 19):  # Loop through all 18 holes
+            yield env.process(self.play_hole(env, cart, hole_number))  # Process each hole one by one
+
+
+        print(f"Cart {cart} has completed the course at time {env.now}.")
+
+    def cart_recieve(self, env):
+        tee_times = [1, 2, 3, 4, 5, 6]
 
         for group_num in tee_times:
-            print("\nPlease type '+' to receive group " + str(group_num) + "'s carts:")
-            user_input = input()
-            if user_input == '+':
-                # taken_carts = random.sample(list(carts), k=2)
-                carts_to_take = clubhouse.carts[:2]
-                print("Carts taken:")
-                for cart in carts_to_take:
-                    print(cart)
-                    clubhouse.remove_cart(cart)
-                print("Carts removed from barn:")
-                print(clubhouse.taken_carts)
-                print("Carts available:")
-                print(clubhouse.carts)
-                print("\nGroup " + str(group_num) + " has been sent off with their carts.")
-                if group_num == 26:
-                    print("\nAll groups have been sent off and are on the golf course.")
-                    #queue_carts()
-            else:
-                print("Please return to pro shop for assistance.")
-                break
+            print(f"\nReceiving group {group_num}'s carts at time {env.now}...")
+            carts_to_take = clubhouse.carts[:2]
+            for cart in carts_to_take:
+                clubhouse.remove_cart(cart)
+                yield env.process(self.send_cart_to_course(env, cart))  # Yield to the process
 
-    #hole_queue.HoleQueue()
+            print(f"Group {group_num} has been sent off with their carts at time {env.now}.")
+
+
     def cart_return(self):
-        taken_carts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-                       28, 29,
-                       30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52]
-        carts = []
-        clubhouse = Clubhouse(carts, taken_carts)
-        tee_times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
-
-        for group_num in tee_times:
-            clubhouse.add_cart(clubhouse.taken_carts[0])
-            clubhouse.add_cart(clubhouse.taken_carts[0])
-
-            print("Carts taken:")
-            print(clubhouse.taken_carts)
-            print("Carts available:")
-            print(clubhouse.carts)
+        print(f"\nCarts are returning to the clubhouse at time {self.env.now}...")
+        while clubhouse.taken_carts:
+            clubhouse.add_cart(clubhouse.taken_carts[0])  # Return the first cart
+            print(f"Returning cart. Available carts: {clubhouse.carts}. Taken carts: {clubhouse.taken_carts}")
 
 
-    if __name__ == "__main__":
-        main()
-        cart_recieve()
-        # cart_return()
-        # holes()
+
+
+
+
+if __name__ == "__main__":
+    env = simpy.Environment()
+    modsim = ModSim(env)
+    modsim.main()
+
+
+    env.process(modsim.cart_recieve(env))
+
+
+    env.run(until=500)  # Simulate 500 time units as an example
