@@ -1,50 +1,35 @@
-import threading
 import queue
 import time
 import clubhouse
 from hole_par import HolePar
-from mod_sim import ModSim
+import threading
 
+carts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+             30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52]
 
 class HoleQueue:
     holes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
+
     def __init__(self):
         self.hole_q = queue.Queue()
-        self.hole_end = threading.Lock()
 
     def start_hole(self, cart, wait):
         def next_hole_wait():
             time.sleep(wait)
-            with self.hole_end:
-                self.hole_q.put(cart)
-                print(f"Cart {cart} sent to next hole. It took them {wait} minutes to get there.")
-
-        threading.Thread(target=next_hole_wait()).start()
+            self.hole_q.put(cart)
+            print(f"Cart {cart} sent to next hole. It took them {wait} minutes to get there.")
 
     def show_group(self):
         return self.hole_q.get()
 
-
 time_nh = HoleQueue()
 
-# Starting the holes by their numbers and using their par numbers from hole_par to queue them in
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_5(HoleQueue.holes[1]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[2]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_3(HoleQueue.holes[3]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[4]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[5]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_3(HoleQueue.holes[6]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[7]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_5(HoleQueue.holes[8]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[9]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[10]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[11]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[12]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_3(HoleQueue.holes[13]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[14]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_5(HoleQueue.holes[15]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_3(HoleQueue.holes[16]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_4(HoleQueue.holes[17]))
-time_nh.start_hole(ModSim.cart_recieve(clubhouse), HolePar.par_5(HoleQueue.holes[18]))
+# for loop looping through carts, run time_nh.start_hole on each cart
+for cart in carts:
+    time_nh.start_hole(cart)
+    while not time_nh.hole_q.empty():
+
+# while loop checking time_nh.hole_queue not empty
+
 
