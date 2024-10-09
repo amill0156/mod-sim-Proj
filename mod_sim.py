@@ -3,7 +3,7 @@ import random
 from clubhouse import Clubhouse
 from hole_par import HolePar
 from golf_course import GolfCourse
-#from course_operator import CourseOperator
+from course_operator import CourseOperator
 
 
 carts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
@@ -18,6 +18,7 @@ hole_par = HolePar()
 class ModSim:
     def __init__(self, env):
         self.env = env
+        self.course_operator = CourseOperator()
 
 
     def main(self):
@@ -36,11 +37,26 @@ class ModSim:
             return hole_par.par_5()
 
 
+    def get_standard_time(self, hole_number):
+        if hole_number in [3, 6, 13, 16]:  # Par 3 holes
+            return 12
+        elif hole_number in [2, 4, 5, 7, 9, 10, 11, 12, 14, 17]:  # Par 4 holes
+            return 14
+        else:  # Par 5 holes (holes 1, 8, 15, 18)
+            return 18
+
+
+
     def play_hole(self, env, cart, hole_number):
         wait_time = self.get_par_wait_time(hole_number)
+        standard_time = self.get_standard_time(hole_number)
         print(f"Group {cart} is starting hole {hole_number} at time {env.now}. Par wait time: {wait_time} minutes.")
         yield env.timeout(wait_time)  # Simulate time taken to complete the hole
         print(f"Group {cart} has finished hole {hole_number} at time {env.now} after {wait_time} minutes.")
+
+
+        actual_wait_time = wait_time
+        self.course_operator.detect_slow(cart, hole_number, actual_wait_time, standard_time)
 
 
     def send_cart_to_course(self, env, cart):

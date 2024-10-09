@@ -1,36 +1,22 @@
-from itertools import count
-
-import golf_course
-#import mod_sim
 class CourseOperator:
-    def __init__(self, cart_condition, group_status):
-        self.cart_condition = cart_condition
-        self.group_status = group_status
+    def __init__(self):
+        self.group_over_limit = {}
 
-    def get_par_wait_time(self, hole_number):
-        pass
+    def detect_slow(self, group_id, hole_number, actual_wait_time, par_standard_time):
+        if group_id not in self.group_over_limit:
+            self.group_over_limit[group_id] = 0
 
-    def detect_slow(self, wait_time):
-        par_3_standard = 12
-        par_4_standard = 14
-        par_5_standard = 18
-        p3_wait_time = mod_sim.ModSim.get_par_wait_time(hole_number=3)
-        p4_wait_time = mod_sim.ModSim.get_par_wait_time(hole_number=2)
-        p5_wait_time = mod_sim.ModSim.get_par_wait_time(hole_number=1)
-        if p3_wait_time > par_3_standard:
-            wait_extra = wait_time - par_3_standard
-            count(wait_extra)
-        if p4_wait_time > par_4_standard:
-            wait_extra = wait_time - par_4_standard
-            count(wait_extra)
-        if p5_wait_time > par_5_standard:
-            wait_extra = wait_time - par_5_standard
-            count(wait_extra)
-        return count
+        time_over_limit = actual_wait_time - par_standard_time
+        if time_over_limit > 0:
+            self.group_over_limit[group_id] += 1
+            print(f"Group {group_id} is over pace by {time_over_limit} minutes.")
+        else:
+            self.group_over_limit[group_id] = max(0, self.group_over_limit[group_id] - 1)
+            print(f"Group {group_id} has gone under the time limit and are ahead of pace.")
 
-    def send_marshall(self, count):
-        period_limit = 5
-        if count > period_limit:
-            for ind_min in period_limit:
-                period_limit -= ind_min
-            return ind_min
+        if self.group_over_limit[group_id] >= 5:
+            self.send_marshal(group_id)
+
+    def send_marshal(self, group_id):
+        self.group_over_limit[group_id] = 0
+        print(f"Marshal sent to group {group_id} for slow play.")
