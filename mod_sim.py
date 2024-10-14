@@ -19,7 +19,9 @@ class ModSim:
         self.course_operator = CourseOperator()
 
     def main(self):
-        print("hello")
+        print("Hello and welcome to Miller's Landing Golf and Country Club!")
+        print("We're glad you're here!")
+        print("When you're ready, grab a cart and take off!")
 
     def get_par_wait_time(self, hole_number):
         if hole_number in [3, 6, 13, 16]:  # Par 3 holes
@@ -55,7 +57,7 @@ class ModSim:
 
     def cart_recieve(self, env):
         tee_times = [1, 2, 3, 4, 5, 6]
-        group_start_delay = 5  # Delay of 5 time units between each group
+        group_start_delay = 10  # Delay of 5 time units between each group
 
         for group_num in tee_times:
             print(f"\nGroup {group_num} is about to go off at time {env.now}...")
