@@ -68,7 +68,7 @@ class ModSim:
                 clubhouse.remove_cart(cart)
                 env.process(self.send_cart_to_course(env, cart, group_num, wait_times))  # Start each cart process concurrently
 
-            #yield env.timeout(group_start_delay)  # Stagger group starts
+            yield env.timeout(group_start_delay)  # Stagger group starts
 
             #print(f"Group {group_num} has been sent off with their carts at time {env.now}.")
 
