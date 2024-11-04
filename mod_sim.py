@@ -12,7 +12,6 @@ taken_carts = []
 clubhouse = Clubhouse(carts, taken_carts)
 hole_par = HolePar()
 
-
 class ModSim:
     def __init__(self, env):
         self.env = env
@@ -79,8 +78,6 @@ class ModSim:
 
             yield env.timeout(group_start_delay)  # Stagger group starts
 
-
-
     def cart_return(self, env):
         print(f"Carts are returning to the clubhouse at time {env.now}...")
 
@@ -92,23 +89,6 @@ class ModSim:
                 yield env.timeout(5)
             print(
                 f"Returning cart {cart_to_return}. Available carts: {clubhouse.carts}. Taken carts: {clubhouse.taken_carts}")
-
-
-
-    #def cart_return(self, env):
-     #   last_return_time = 0
-      #  return_gap = 5
-       # print(f"\nCarts are returning to the clubhouse at time {env.now}...")
-
-        #while clubhouse.taken_carts:
-         #   if env.now - last_return_time < return_gap:
-          #      wait_time = return_gap - (env.now - last_return_time)
-           #     print(f"Waiting {wait_time} minutes to return next group of carts...")
-            #    yield env.timeout(wait_time)
-        #clubhouse.add_cart(clubhouse.taken_carts[0])
-        #print(f"Returning cart. Available carts: {clubhouse.carts}. Taken carts: {clubhouse.taken_carts}")
-        #last_return_time = env.now
-
 
 if __name__ == "__main__":
     env = simpy.Environment()
