@@ -1,27 +1,8 @@
 from datetime import timedelta
-import re
 
 file_paths = ['coursedata.txt', 'coursedata2.txt', 'coursedata3.txt', 'coursedata4.txt', 'coursedata5.txt',
-              'coursedata6.txt', 'coursedata7.txt',
-              'coursedata8.txt', 'coursedata9.txt', 'coursedata10.txt']
-
-for file_path in file_paths:
-    marshal_count = 0
-    ahead_count = 0
-    behind_count = 0
-    within_count = 0
-
-    with open(file_path, 'r') as file:
-        content = file.read()
-        marshal_count += len(re.findall(r"Marshal sent", content))
-        ahead_count += len(re.findall(r"ahead of pace", content))
-        behind_count += len(re.findall(r"behind pace", content))
-        within_count += len(re.findall(r"stayed", content))
-
-        print(marshal_count)
-        print(ahead_count)
-        print(behind_count)
-        print(within_count)
+              'coursedata6.txt', 'coursedata7.txt', 'coursedata8.txt', 'coursedata9.txt',
+              'coursedata10.txt']
 
 for file_path in file_paths:
     group_times = {}

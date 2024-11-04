@@ -7,13 +7,14 @@ class CourseOperator:
             self.group_over_limit[group_id] = 0
 
         time_over_limit = actual_wait_time - par_standard_time
-        time_under_limit = par_standard_time - actual_wait_time
         if time_over_limit > 0:
             self.group_over_limit[group_id] += 1
             print(f"Group {group_id} is over pace by {time_over_limit} minute(s) and are behind pace.")
+        elif time_over_limit == 0:
+            print(f"Group {group_id} stayed within the time limit of the hole.")
         else:
             self.group_over_limit[group_id] = max(0, self.group_over_limit[group_id] - 1)
-            print(f"Group {group_id} has gone under the time limit by {time_under_limit} minute(s) and are "
+            print(f"Group {group_id} has gone under the time limit and are "
                   f"ahead of pace.")
 
         if self.group_over_limit[group_id] >= 5:
