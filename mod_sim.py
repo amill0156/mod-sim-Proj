@@ -12,7 +12,6 @@ taken_carts = []
 clubhouse = Clubhouse(carts, taken_carts)
 hole_par = HolePar()
 
-
 class ModSim:
     def __init__(self, env):
         self.env = env
@@ -39,43 +38,57 @@ class ModSim:
         else:  # Par 5 holes (holes 1, 8, 15, 18)
             return 18
 
-    def play_hole(self, env, cart, hole_number, wait_time):
+    def play_hole(self, env, cart, group_num, hole_number, wait_time):
         standard_time = self.get_standard_time(hole_number)
-        print(f"Cart {cart} is starting hole {hole_number} at time {env.now}. Par wait time: {wait_time} minutes.")
+        print(f"Cart {cart} is starting hole {hole_number} at time {env.now}. Time taken at hole: {wait_time} minutes.")
         yield env.timeout(wait_time)  # Simulate time taken to complete the hole
         print(f"Cart {cart} has finished hole {hole_number} at time {env.now} after {wait_time} minutes.")
 
         actual_wait_time = wait_time
-        self.course_operator.detect_slow(cart, hole_number, actual_wait_time, standard_time)
+        self.course_operator.detect_slow(group_num, hole_number, actual_wait_time, standard_time)
 
-    def send_cart_to_course(self, env, cart, wait_times):
+    def send_cart_to_course(self, env, cart, group_num, wait_times):
         for hole_number in range(1, 19):  # Loop through all 18 holes
-            yield env.process(self.play_hole(env, cart, hole_number, wait_times[hole_number-1]))  # Process each hole one by one
+            yield env.process(self.play_hole(env, cart, group_num, hole_number,
+                                             wait_times[hole_number - 1]))  # Process each hole one by one
 
-        print(f"Group {cart} has completed the course at time {env.now}.")
+        print(f"Cart {cart} has completed the course at time {env.now}.")
+
+        clubhouse.taken_carts.pop(taken_carts.index(cart))
+        return_gap = 10
+        yield env.timeout(return_gap)
+
+        clubhouse.add_cart(cart)
+        print(f"Cart {cart} has returned to the cart barn at time {env.now}. Available carts: {clubhouse.carts}.")
+
 
     def cart_recieve(self, env):
-        tee_times = list(range(1, 14))
+        tee_times = list(range(1, 27))
         group_start_delay = 10  # Delay of 10 time units between each group
 
         for group_num in tee_times:
             wait_times = [self.get_par_wait_time(hole_number) for hole_number in range(1, 19)]
-            print(f"\nGroup {group_num} is about to go off at time {env.now}...")
+
+            print(f"Group {group_num} has been sent off with their carts.")
+            print(f"Group {group_num} is teeing off at time {env.now}...")
             carts_to_take = clubhouse.carts[:2]
             for cart in carts_to_take:
                 clubhouse.remove_cart(cart)
-                env.process(self.send_cart_to_course(env, cart, wait_times))  # Start each cart process concurrently
+                env.process(self.send_cart_to_course(env, cart, group_num, wait_times))  # Start each cart process concurrently
 
             yield env.timeout(group_start_delay)  # Stagger group starts
 
-            #print(f"Group {group_num} has been sent off with their carts at time {env.now}.")
+    def cart_return(self, env):
+        print(f"Carts are returning to the clubhouse at time {env.now}...")
 
-    def cart_return(self):
-        print(f"\nCarts are returning to the clubhouse at time {self.env.now}...")
         while clubhouse.taken_carts:
-            clubhouse.add_cart(clubhouse.taken_carts[0])  # Return the first cart
-            print(f"Returning cart. Available carts: {clubhouse.carts}. Taken carts: {clubhouse.taken_carts}")
+            cart_to_return = clubhouse.taken_carts.pop(0)
+            clubhouse.add_cart(cart_to_return)
 
+            if clubhouse.taken_carts:
+                yield env.timeout(5)
+            print(
+                f"Returning cart {cart_to_return}. Available carts: {clubhouse.carts}. Taken carts: {clubhouse.taken_carts}")
 
 if __name__ == "__main__":
     env = simpy.Environment()
@@ -84,4 +97,4 @@ if __name__ == "__main__":
 
     env.process(modsim.cart_recieve(env))
 
-    env.run(until=500)
+    env.run(600)

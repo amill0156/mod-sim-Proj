@@ -6,7 +6,6 @@ class Clubhouse:
 
     def add_cart(self, cart_to_add):
         self.carts.append(cart_to_add)
-        self.taken_carts.remove(cart_to_add)
 
     def remove_cart(self, cart_to_remove):
         self.carts.remove(cart_to_remove)
