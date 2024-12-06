@@ -1,3 +1,5 @@
+# Data file to gather necessary data from .txt files used with program output
+
 from datetime import timedelta
 import re
 

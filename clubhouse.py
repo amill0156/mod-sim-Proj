@@ -1,3 +1,5 @@
+
+# Clubhouse class to initialize some variables
 class Clubhouse:
 
     def __init__(self, carts, taken_carts = []):
