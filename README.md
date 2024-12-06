@@ -20,6 +20,8 @@ Within the terminal using pip:
 
 > $ pip install simpy
 
+Note: You will need to install pip if you opt for this method of download.
+
 ### Numpy Installation
 Within the IDE(PyCharm), find the "Python Packages" tab (this will be the second option down in the lower column of options on the left side toolbar) to navigate to the packages download interface. Here you will simply search "numpy" and the package will appear. It is best to download the latest version.
 
@@ -32,6 +34,8 @@ OR
 Within the terminal using pip:
 
 > $ pip install numpy
+
+Note: You will need to install pip if you opt for this method of download.
 
 ### Project Installation and Setup
 
