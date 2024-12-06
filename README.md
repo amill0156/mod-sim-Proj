@@ -1,5 +1,5 @@
 # Golf Course Tournament Pace Simulation Model
-A golf course simulation model that replicates the real-life random nature of golf course operations and the time discrepancies that form as a result. This project displays the overall function of time management in a tournament setting. Designed and built in the Python language, the program utilizes the simpy framework to run a simulation of a tournament to most closely mimic that of real-world scenarios to better study time discrepancies and course efficiency  
+A golf course simulation model that replicates the real-life random nature of golf course operations and the time discrepancies that form as a result. This project displays the overall function of time management in a tournament setting. Designed and built in the Python language, the program utilizes the simpy framework to run a simulation of a tournament to most closely mimic that of real-world scenarios to better study time discrepancies and course efficiency.  
 
 ## Installations
 Since the program is only existent end-to-end within the Python console, it is recommended for the best experience, that you install an IDE such as PyCharm (the native IDE used for the development of this program) or another IDE that works well with Python like Visual Studio Code.
