@@ -86,7 +86,7 @@ class ModSim:
         # 26 tee times
         tee_times = list(range(1, 27))
         # Time gap between group starts
-        group_start_delay = 10  # Delay of 10 time units between each group
+        group_start_delay = 8  # Delay of 8 time units between each group
 
         # Iterating through tee times using groups to deploy two carts per group to 4 golfers
         for group_num in tee_times:
