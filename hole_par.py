@@ -1,5 +1,6 @@
 import random
 
+# Setting ranges for random time calculations
 class HolePar:
     def par_3(self):
         time_range_p3 = random.randint(10, 14)
